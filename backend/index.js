@@ -24,8 +24,9 @@ const app = express();
 const httpServer = http.createServer(app);
 const MongoDBStore = connectMongo(session);
 const store = new MongoDBStore({
-    uri: process.env.MONGO_URI,
+    uri: process.env.MONGO_URI + '?tls=true', // Enabling SSL for MongoDB connection
     collection: 'sessions',
+
 });
 
 store.on('error', (err) => {
@@ -58,7 +59,7 @@ const server = new ApolloServer({
 await server.start();
 
 app.use(
-    '/',
+    '/graphql',
     cors({
         origin: 'http://localhost:3000',
         credentials: true,
@@ -71,4 +72,4 @@ app.use(
 );
 await new Promise(resolve => httpServer.listen({port: 4000}, resolve));
 await connectDB();
-console.log(`Server ready at http://localhost:4000/`);
+console.log(`Server ready at http://localhost:4000/graphql`);
